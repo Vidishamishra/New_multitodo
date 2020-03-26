@@ -2,8 +2,6 @@ import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'font-awesome/css/font-awesome.min.css';
 import './App.css';
-import CategoryListContents from './Components/CategoryListContents.Components';
-import SubcategoryListContents from './Components/SubcategoryListContents.Components';
 
 class App extends React.Component {
   constructor(props) {
@@ -183,7 +181,15 @@ class App extends React.Component {
     })
   }
 
-
+  checkSubject = () => {
+    var subjectCopy = [...this.state.task_container];
+    let i
+    for (i = 0; i < subjectCopy.length; i++) {
+      if (subjectCopy[i].title === this.state.task_id) { // return selected subject status
+        return  subjectCopy[i].status
+      }
+    }
+  }
 
 
   toggleCheckChapter = (subtask) => {
@@ -229,6 +235,35 @@ class App extends React.Component {
 
   render() {
 
+    let categoryListContents = () => this.state.task_container.map(function (task, index) {
+      return (
+
+        <div className="card-dimension">
+          <button className="btn-rounded" type="button" onClick={() => this.toggleCheckSubject(task)}>
+          { (task.status) ? <i className="fa fa-check" aria-hidden="true"></i> : <i className="fa fa-square" aria-hidden="true"></i>}
+        </button>
+
+          <div className="category-items">{task.title}</div>
+          <button className="btn-rounded" type="button" onClick={() => this.showList(index)}><i className="fa fa-plus" aria-hidden="true"></i></button>
+          <button className="btn-rounded" type="button" onClick={() => this.removeSubject(index)}><i className="fa fa-trash" aria-hidden="true"></i></button>
+          </div>
+      )
+    }, this);
+
+     let listContents = () => this.state.task_list.map(function(subtask, index){
+       return (
+        <div className="card-dimension">
+            <button className="btn-rounded" type="button" onClick={() => this.toggleCheckChapter(subtask)}>
+              {subtask.status}
+              { this.checkSubject()}
+          { (subtask.chapter_status ) ? <i className="fa fa-check" aria-hidden="true"></i> : <i className="fa fa-square" aria-hidden="true"></i>}
+        </button>
+           <div className="category-items">{subtask.chapter_title}</div>
+           <button className="btn-rounded" type="button" onClick={() => this.removeChapter(index)}><i className="fa fa-trash" aria-hidden="true"></i></button>
+         </div>
+       )
+     },this); 
+
     return (
       <React.Fragment>
 
@@ -252,12 +287,7 @@ class App extends React.Component {
                 {this.state.error.task && <div className="error"> {this.state.error.task} </div>}
               </div>
               <div className="content">
-                <CategoryListContents
-                  task_container = {this.state.task_container}
-                  toggleCheckSubject = {this.toggleCheckSubject}
-                  showList = {this.showList}
-                  removeSubject = {this.removeSubject}/>
-                
+              {categoryListContents()}
             </div>
             </div>
            
@@ -275,11 +305,7 @@ class App extends React.Component {
                 </div>
 
                 <div className="content">
-                  <SubcategoryListContents
-                    task_list = {this.state.task_list}
-                    toggleCheckChapter = {this.toggleCheckSubject}
-                    removeChapter = {this.removeChapter}
-                  />
+                  {listContents()}
                 </div>
               </div>}
           </div>
